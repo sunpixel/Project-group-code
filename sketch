@@ -1,0 +1,47 @@
+import pygame as pg
+
+pg.init()
+
+window = pg.display.set_mode((500,500))     # Размер отображаемого экрана в пикселях
+                                            # переменная tuple никак иначе!!!
+
+pg.display.set_caption("First game")    # Название высвечивающиеся при запуске
+                                        # ТИТУЛ программы
+
+x = 250
+y = 250
+radius = 20
+vel = 10
+
+run = 1
+
+while run:      # Нужно чтобы программа функционировала после исполения кода раз
+
+
+    window.fill((0,0,0))    # Заполняет экран черным чтобы не оставалось следа
+                            #движения объекта
+
+    pg.draw.circle(window, (255,127,39), (int(x), int(y)), radius)  # рисует круг
+
+    
+
+    pg.display.update()             # Обновляет картинку и дает возможность закрыть 
+    for event in pg.event.get():    # исполняемый файл Красным крестом в углу
+        if event.type == pg.QUIT:   # Функция закрытия файла
+            run = 0
+
+
+
+    userInput = pg.key.get_pressed()    # Получение информации от пользоваетля
+                                        # в виде нажатой кнопки
+    if userInput[pg.K_a]:               # UserInput - переменная
+        x -= vel                        # [исполняемая команда] - [pg.K_(клавиша)]
+    if userInput[pg.K_d]:               # Нельзя использовать ELIF иначе невозможно будет
+        x += vel                        # передвигаться по диагонале
+    if userInput[pg.K_s]:
+        y += vel
+    if userInput[pg.K_w]:
+        y -= vel
+    
+
+    pg.time.delay(15)                   # задержка при повторном выполнении цикла (в милисикундах)
