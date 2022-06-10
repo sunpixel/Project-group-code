@@ -1,7 +1,10 @@
+from errno import ETIME
+from tkinter import Image
 import pygame as pg
 import random
 
 pg.init()
+
 
 window = pg.display.set_mode((800, 600))
 
@@ -22,6 +25,7 @@ entity = pg.image.load('SpaceShip.png')
 
 hostile = pg.image.load('Enemy.png')
 
+explode = pg.transform.scale(pg.image.load('explosion.png'), (60, 60))
 
 
 def show_score():
@@ -65,13 +69,16 @@ class Player:
             self.cool_down_counter += 1
 
     def deal_damage(self):
-        global score_value
+        global score_value, enemy_x, enemy_y, hit
         for enemy in enemies:
             for bullet in self.bullets:
                 if enemy.hit_box[0]- 25 < bullet.x + 10 < enemy.hit_box[0] + 50 and enemy.hit_box[1] < bullet.y + 10 < enemy.hit_box[1] + 80:
+                    score_value += 100
+                    hit = 1
+                    enemy_x = enemy.x
+                    enemy_y = enemy.y
                     self.bullets.remove(bullet)
                     enemies.remove(enemy)
-                    score_value += 100
 
 
 class Bullet:
@@ -120,6 +127,12 @@ class Enemy:
     def win(self):
         return not (self.y <= 455)
 
+
+class Spawn:
+    def __init__(self, wave, spawn_rate):
+        self.wave = wave
+        self.spawn_rate = spawn_rate
+
 def draw_game():
     if game_over:
         window.blit(over, (300, 200))
@@ -136,6 +149,8 @@ def draw_game():
         pg.time.delay(30)
         pg.display.update()
 
+e_time = 0
+hit = 0
 
 player = Player(225, 510)
 
@@ -147,15 +162,16 @@ over = font.render("Game Over", True, (255, 255, 255))
 
 run = True
 
+enemy_x, enemy_y = 0, 0
 spawn_x = 25
-
 spawn_y = 0
 
 while run:
 
     spawn_x = 25
-
     spawn_y = 0
+    c_time = pg.time.get_ticks()
+
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -180,6 +196,18 @@ while run:
         if enemy.win():
             enemies.clear()
             game_over = True
+
+########################
+
+    c_time = pg.time.get_ticks()
+    if hit:
+        e_time = c_time + 100
+        hit = 0
+
+    if c_time < e_time:
+        window.blit(explode, (enemy_x, enemy_y))
+
+#########################
 
     show_score()
     pg.display.update()
