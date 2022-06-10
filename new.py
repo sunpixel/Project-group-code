@@ -1,5 +1,3 @@
-from errno import ETIME
-from tkinter import Image
 import pygame as pg
 import random
 
@@ -134,8 +132,12 @@ class Spawn:
         self.spawn_rate = spawn_rate
 
 def draw_game():
-    if game_over:
+    if menu:
+        window.blit(start1, (200, 200))
+        pg.display.update()
+    elif game_over:
         window.blit(over, (300, 200))
+        window.blit(restart, (200, 250))
         pg.time.delay(30)
         pg.display.update()
     else:
@@ -153,18 +155,20 @@ e_time = 0
 hit = 0
 
 player = Player(225, 510)
-
 enemies = []
 
 game_over = False
+menu = True
 
+restart = font.render("To play again press 'R'.", False, (204, 0, 0))
 over = font.render("Game Over", True, (255, 255, 255))
+start1 = font.render("To start playing press 'R'.", False, (204, 0, 0))
 
 run = True
 
 enemy_x, enemy_y = 0, 0
 spawn_x = 25
-spawn_y = 0
+spawn_y = -25
 
 while run:
 
@@ -182,20 +186,26 @@ while run:
     player.movement(userInput)
     player.shooting()
 
+    if menu and userInput[pg.K_r]:
+        menu = False
+
     if game_over and userInput[pg.K_r]:
-        run = False
+        game_over = False
 
-    if len(enemies) == 0:
-        for i in range(8):
-            enemy = Enemy(spawn_x, spawn_y)
-            enemies.append(enemy)
-            spawn_x += 100
+    if not game_over or not menu:
+        if len(enemies) == 0:
+            for i in range(8):
+                enemy = Enemy(spawn_x, spawn_y)
+                enemies.append(enemy)
+                spawn_x += 100
 
-    for enemy in enemies:
-        enemy.move()
-        if enemy.win():
-            enemies.clear()
-            game_over = True
+        for enemy in enemies:
+            enemy.move()
+            if enemy.win():
+                enemies.clear()
+                game_over = True
+
+# Show explosion EFFECT
 
 ########################
 
