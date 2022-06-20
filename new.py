@@ -1,5 +1,6 @@
 import pygame as pg
 import random
+import os
 
 pg.init()
 
@@ -12,18 +13,20 @@ score_value = 0
 font = pg.font.SysFont('Comic Sans MS', 34)
 
 if bg <= 5:
-    BackGround = pg.transform.scale(pg.image.load('background1.png') , (800, 600))
+    BackGround = pg.transform.scale(pg.image.load(os.path.join(os.path.dirname(__file__), 'images', 'background1.png')) , (800, 600))
 elif 10 >= bg > 5:
-    BackGround = pg.transform.scale(pg.image.load('background2.jpg') , (800, 600))
+    BackGround = pg.transform.scale(pg.image.load(os.path.join(os.path.dirname(__file__), 'images', 'background2.jpg')) , (800, 600))
 elif 15 >= bg > 10:
-    BackGround = pg.transform.scale(pg.image.load('background3.jpg') , (800, 600))
+    BackGround = pg.transform.scale(pg.image.load(os.path.join(os.path.dirname(__file__), 'images', 'background3.jpg')) , (800, 600))
 
 
-entity = pg.image.load('SpaceShip.png')
+entity = pg.image.load(os.path.join(os.path.dirname(__file__), 'images', 'SpaceShip.png'))
 
-hostile = pg.image.load('Enemy.png')
+hostile = pg.image.load(os.path.join(os.path.dirname(__file__), 'images', 'Enemy.png'))
 
-explode = pg.transform.scale(pg.image.load('explosion.png'), (60, 60))
+explode = pg.transform.scale(pg.image.load(os.path.join(os.path.dirname(__file__), 'images', 'explosion.png')), (60, 60))
+
+menuBG = pg.transform.scale(pg.image.load(os.path.join(os.path.dirname(__file__), 'images', 'Menu-BG.jpg')), (800, 600))
 
 
 def show_score():
@@ -78,6 +81,7 @@ class Player:
                     self.bullets.remove(bullet)
                     enemies.remove(enemy)
 
+# Nikita
 
 class Bullet:
 
@@ -95,6 +99,7 @@ class Bullet:
     def draw_bullet(self):
         pg.draw.circle(window, (255, 255, 255), (self.x + 25, self.y - 5), 10)
 
+# Amir
 
 class Enemy:
 
@@ -133,9 +138,13 @@ class Spawn:
 
 def draw_game():
     if menu:
+        window.blit(menuBG, (0, 0))
         window.blit(start1, (200, 200))
+        window.blit(start2, (250, 300))
+        window.blit(start3, (190, 400))
         pg.display.update()
     elif game_over:
+        window.fill((0, 0, 0))
         window.blit(over, (300, 200))
         window.blit(restart, (200, 250))
         pg.time.delay(30)
@@ -148,11 +157,12 @@ def draw_game():
             bullet.draw_bullet()
         for enemy in enemies:
             enemy.draw(window)
+        show_score()
         pg.time.delay(30)
         pg.display.update()
 
-e_time = 0
-hit = 0
+e_time = 0   # End time
+hit = 0      # Hit
 
 player = Player(225, 510)
 enemies = []
@@ -160,20 +170,23 @@ enemies = []
 game_over = False
 menu = True
 
+
 restart = font.render("To play again press 'R'.", False, (204, 0, 0))
 over = font.render("Game Over", True, (255, 255, 255))
 start1 = font.render("To start playing press 'R'.", False, (204, 0, 0))
+start2 = font.render("Use 'A', 'D' to move..", False, (255, 255, 255))
+start3 = font.render("Press 'SPACEBAR' to shoot.", False, (255, 255, 255))
 
 run = True
 
 enemy_x, enemy_y = 0, 0
 spawn_x = 25
-spawn_y = -25
+spawn_y = -50
 
 while run:
 
     spawn_x = 25
-    spawn_y = 0
+    spawn_y = -25
     c_time = pg.time.get_ticks()
 
 
@@ -218,10 +231,5 @@ while run:
         window.blit(explode, (enemy_x, enemy_y))
 
 #########################
-
-    show_score()
-    pg.display.update()
-
+    
     draw_game()
-
-        
